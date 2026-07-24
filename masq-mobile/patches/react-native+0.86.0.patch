@@ -1,0 +1,74 @@
+diff --git a/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec.js b/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec.js
+index 00e0da3..575fb9e 100644
+--- a/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec.js
++++ b/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec.js
+@@ -55,7 +55,9 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
+   const resolvedAppPath = path.resolve(appPath);
+ 
+   const xcodeproj = String(
+-    execSync(`find ${resolvedAppPath} -type d -name "*.xcodeproj"`),
++    execSync(
++      `find ${JSON.stringify(resolvedAppPath)} -type d -name "*.xcodeproj"`,
++    ),
+   )
+     .trim()
+     .split('\n')
+@@ -71,7 +73,9 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
+   }
+   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
+   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
+-  const findCommand = `find ${path.join(resolvedAppPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
++  const findCommand = `find ${JSON.stringify(
++    path.join(resolvedAppPath, jsSrcsDir),
++  )} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
+   const list = String(execSync(findCommand))
+     .trim()
+     .split('\n')
+diff --git a/node_modules/react-native/scripts/cocoapods/new_architecture.rb b/node_modules/react-native/scripts/cocoapods/new_architecture.rb
+index 63b1d87..003f217 100644
+--- a/node_modules/react-native/scripts/cocoapods/new_architecture.rb
++++ b/node_modules/react-native/scripts/cocoapods/new_architecture.rb
+@@ -4,6 +4,7 @@
+ # LICENSE file in the root directory of this source tree.
+ 
+ require 'json'
++require 'shellwords'
+ 
+ require_relative "./utils.rb"
+ require_relative "./helpers.rb"
+@@ -171,7 +172,7 @@ class NewArchitectureHelper
+         excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/", ".xcframework", ".framework", "watchkitapp", "today-extention"]
+         projectPaths.each do |projectPath|
+             projectFolderPath = File.dirname(projectPath)
+-            infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
++            infoPlistFiles = `find #{Shellwords.escape(projectFolderPath)} -name "Info.plist"`
+             infoPlistFiles = infoPlistFiles.split("\n").map { |f| f.strip }
+ 
+             infoPlistFiles.each do |infoPlistFile|
+diff --git a/node_modules/react-native/scripts/react-native-xcode.sh b/node_modules/react-native/scripts/react-native-xcode.sh
+index 1dcdf55..118cd23 100755
+--- a/node_modules/react-native/scripts/react-native-xcode.sh
++++ b/node_modules/react-native/scripts/react-native-xcode.sh
+@@ -171,7 +171,8 @@ else
+   if [[ $DEV == true ]]; then
+     EXTRA_COMPILER_ARGS=-Og
+   else
+-    EXTRA_COMPILER_ARGS=-O
++    # App Store archives must not retain the absolute local bundle path in Hermes debug metadata.
++    EXTRA_COMPILER_ARGS="-O -g0"
+   fi
+   if [[ $EMIT_SOURCEMAP == true ]]; then
+     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
+diff --git a/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec b/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
+index dc1b355..528eb1f 100644
+--- a/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
++++ b/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
+@@ -93,7 +93,7 @@ Pod::Spec.new do |spec|
+       )
+ 
+       spec.user_target_xcconfig = {
+-        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
++        'HERMES_CLI_PATH' => '$(PODS_ROOT)/../../node_modules/hermes-compiler/hermesc/osx-bin/hermesc'
+       }
+     end
+ 

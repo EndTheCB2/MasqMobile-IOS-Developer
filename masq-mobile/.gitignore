@@ -1,0 +1,55 @@
+.DS_Store
+.idea/
+.vscode/
+
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.xcarchive
+*.xcuserstate
+*.dSYM
+*.dSYM.zip
+**/.xcode.env.local
+
+# JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+.metro-health-check*
+coverage/
+*.jsbundle
+
+# Ruby and CocoaPods
+.bundle/
+vendor/bundle/
+**/Pods/
+
+# Rust and generated native output
+native/build/
+native/masq-mobile-core/target/
+
+# Local secrets and signing artifacts
+.env
+.env.*
+!.env.example
+*.mobileprovision
+*.provisionprofile
+*.cer
+*.der
+*.key
+*.pem
+*.p8
+*.p12

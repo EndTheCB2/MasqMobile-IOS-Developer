@@ -1,0 +1,7 @@
+masq-node-mobile/vendor/** linguist-vendored
+# Preserve corresponding upstream source byte-for-byte in the clean root snapshot.
+masq-node-mobile/** -whitespace
+masq-mobile/patches/** -whitespace
+*.jar binary
+*.mmdb binary
+*.png binary
